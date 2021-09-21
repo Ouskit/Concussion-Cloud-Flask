@@ -3,12 +3,16 @@ from api.utils.database import db
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields
 from api.routes.VEPData import vep_routes
+from dotenv import dotenv_values
+import os
 
 app = Flask(__name__)
+config = dotenv_values(".env")
 
-# TODO python decouple
+DATABASR_URL = os.getenv("DATABASE_URL")
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:wmlab57997@140.115.54.9:4000/game"
+app.config['SQLALCHEMY_DATABASE_URI'] = config['DATABASE_URL']
 
 db.init_app(app)
 with app.app_context():
