@@ -33,11 +33,10 @@ def submit():
     tt = aa.split('\n');
     for i in tt:
         qq = json.loads(i)
-        print(qq['Data']['Timestamp'])
-
+        print(qq)
 
     return 'OK'
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port="5000")
