@@ -1,4 +1,5 @@
 from api.models.VEPData import VepData, VepDataSchema
+from api.models.PlayHistory import PlayHistorySchema
 from api.utils.responses import response_with
 from api.utils import responses as resp
 from flask import Blueprint, request, url_for, current_app
@@ -20,22 +21,23 @@ def create_vep():
             row_data = json.loads(i)
             data = {}
             # Create Play History
-            if row_data['_dataType'] == 'GameData.GameFlowData':
-                pass
+            if row_data['_dataType'] == 'DataSync.Entity.ScopeStartEntity':
+                data['username'] = row_data['_userId']
+                data['sessionid'] = row_data['_scopeId']
+                data['gameid'] = row_data['projectId']
+                play_history_schema = PlayHistorySchema()
+                play_history = play_history_schema.load(data)
+                play_history.create()
 
             # Store VEP EEG Data
             elif row_data['_dataType'] == 'Data.EEGData':
-                data['gameid'] = '0000'
-                data['username'] = 'okt'
-                data['sessionid'] = '20210915'
+                data['gameid'] = row_data['projectId']
+                data['username'] = row_data['_userId']
+                data['sessionid'] = row_data['_scopeId']
                 data['eeg_value'] = row_data['Data']['rawVal']
                 vep_schema = VepDataSchema()
                 vep = vep_schema.load(data)
                 vep.create()
-            else:
-                print(row_data['Data']['_dataType'])
-            #data['gameid'] = row_data['Data']['projectId']
-            #data['sessionid'] = row_data['Data']['_scopeId']
 
         return response_with(resp.SUCCESS_201)
     except Exception as e:
